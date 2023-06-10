@@ -1,7 +1,19 @@
 package com.br.alura.modelo;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Table(name = "cursos")
+@Entity(name = "Curso")
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Curso {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String nome;
 	private String categoria;
