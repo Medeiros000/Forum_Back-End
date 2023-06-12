@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,30 +35,6 @@ public class Usuario implements UserDetails {
 		this.senha = dados.senha();
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Usuario other = (Usuario) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -92,5 +69,31 @@ public class Usuario implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+
+	public void getSenha(String senha) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		this.senha = encoder.encode(senha);
+	}
+
+	public void atualizarInformacoesUsuario(DadosAtualizacaoUsuario dados) {
+		if(dados.nome() != null) {
+			this.nome = dados.nome();
+		}
+		if(dados.email() != null) {
+			this.email = dados.email();
+		}
+		if(dados.senha() != null) {
+			this.senha = dados.senha();
+		}
+	}
+
+	public void excluir() {
+		if (this.ativo) {
+			this.ativo = false;
+		} else {
+			this.ativo = true;
+		}
 	}
 }

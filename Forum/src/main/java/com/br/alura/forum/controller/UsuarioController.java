@@ -38,4 +38,19 @@ public class UsuarioController {
         return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
     }
 
+    @PutMapping
+    @Transactional
+    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoUsuario dados){
+        var usuario = repository.getReferenceById(dados.id());
+        usuario.atualizarInformacoesUsuario(dados);
+        return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity excluir(@PathVariable Long id){
+        var usuario = repository.getReferenceById(id);
+        usuario.excluir();
+        return ResponseEntity.noContent().build();
+    }
 }
