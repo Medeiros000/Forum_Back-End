@@ -30,12 +30,4 @@ public class Resposta {
 	private Usuario autor;
 	private Boolean solucao = false;
 
-	public Resposta(DadosDetalhamentoResposta dados) {
-		this.id = dados.id();
-		this.mensagem = dados.mensagem();
-		this.topico = new Topico(dados.idTopico());
-		this.dataCriacao = dados.dataCriacao();
-		this.autor = new Usuario(dados.idAutor());
-		this.solucao = dados.solucao();
-	}
 }

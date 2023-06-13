@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "topicos")
@@ -36,16 +37,10 @@ public class Topico {
 	@ManyToOne
 	private Curso curso;
 	@OneToMany(mappedBy = "topico")
-	private List<Resposta> respostas;
+	private List<Resposta> respostas = new ArrayList<>();
 
 	public void setRespostas(List<Resposta> respostas) {
 		this.respostas = respostas;
-	}
-
-	public Topico(String titulo, String mensagem, Curso curso) {
-		this.titulo = titulo;
-		this.mensagem = mensagem;
-		this.curso = curso;
 	}
 
 	public Topico(DadosCadastroTopico dados) {
@@ -54,10 +49,6 @@ public class Topico {
 		dataCriacao = LocalDateTime.now();
 		this.curso = new Curso(dados.idCurso());
 		this.autor = new Usuario(dados.idAutor());
-	}
-
-	public void adicionarResposta(Resposta resposta) {
-		respostas.add(resposta);
 	}
 
 	@Override

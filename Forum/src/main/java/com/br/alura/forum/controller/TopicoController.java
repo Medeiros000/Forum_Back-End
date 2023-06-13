@@ -1,9 +1,7 @@
 package com.br.alura.forum.controller;
 
-import com.br.alura.forum.domain.curso.DadosListagemCurso;
-import com.br.alura.forum.domain.resposta.DadosDetalhamentoResposta;
 import com.br.alura.forum.domain.resposta.Resposta;
-import com.br.alura.forum.domain.resposta.RespostaService;
+import com.br.alura.forum.domain.resposta.RespostaRepository;
 import com.br.alura.forum.domain.topico.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -24,12 +22,8 @@ public class TopicoController {
     @Autowired
     private TopicoRepository repository;
 
-    private final RespostaService respostaService;
-
-    public TopicoController(RespostaService respostaService) {
-        this.respostaService = respostaService;
-    }
-
+    @Autowired
+    private RespostaRepository respostaRepository;
 
     @PostMapping
     @Transactional
@@ -37,7 +31,7 @@ public class TopicoController {
         var topico = new Topico(dados);
         repository.save(topico);
         var uri= uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
-        return ResponseEntity.created(uri).body(new DadosDetalhamentoTopico(topico));
+        return ResponseEntity.created(uri).body(DadosDetalhamentoTopico.fromTopicoETodasRespostas(topico, topico.getRespostas()));
     }
     @GetMapping
     @Transactional
@@ -50,16 +44,11 @@ public class TopicoController {
     @Transactional
     public ResponseEntity<DadosDetalhamentoTopico> detalharTopico(@PathVariable Long id){
         var topico = repository.getReferenceById(id);
-        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
+        List<Resposta> respostas = respostaRepository.findByTopicoId(id);
+        topico.setRespostas(respostas);
+        System.out.println(topico);
+        return ResponseEntity.ok(DadosDetalhamentoTopico.fromTopicoETodasRespostas(topico, respostas));
     }
 
-    @PostMapping("/{id}/respostas")
-    @Transactional
-    public ResponseEntity cadastrarResposta(@PathVariable Long id, @RequestBody @Valid DadosDetalhamentoResposta dados, UriComponentsBuilder uriBuilder){
-        var topico = repository.getReferenceById(id);
-        var resposta = new Resposta(dados);
-        topico.adicionarResposta(resposta);
-        var uri= uriBuilder.path("/topicos/{id}/respostas/{id}").buildAndExpand(topico.getId(), resposta.getId()).toUri();
-        return ResponseEntity.created(uri).body(resposta);
-    }
+
 }
