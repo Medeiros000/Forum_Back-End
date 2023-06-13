@@ -64,4 +64,10 @@ public class Topico {
 				", respostas=" + respostas +
 				'}';
 	}
+
+    public void atualizarInformacoesTopico(DadosAtualizacaoTopico dados) {
+		this.titulo = dados.titulo();
+		this.mensagem = dados.mensagem();
+		this.curso = new Curso(dados.idCurso());
+    }
 }

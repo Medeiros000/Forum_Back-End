@@ -7,6 +7,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record DadosDetalhamentoTopico(Long id, String titulo, String mensagem, LocalDateTime data, String nomeAutor, String nomeCurso, List<DadosDetalhamentoResposta> respostas) {
+    public DadosDetalhamentoTopico(Topico topico) {
+        this(
+                topico.getId(),
+                topico.getTitulo(),
+                topico.getMensagem(),
+                topico.getDataCriacao(),
+                topico.getAutor().getNome(),
+                topico.getCurso().getNome(),
+                DadosDetalhamentoResposta.fromRespostas(topico.getRespostas())
+        );
+    }
+
     public static DadosDetalhamentoTopico fromTopicoETodasRespostas(Topico topico, List<Resposta> respostas) {
         List<DadosDetalhamentoResposta> detalhamentoRespostas = DadosDetalhamentoResposta.fromRespostas(respostas);
 

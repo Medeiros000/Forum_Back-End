@@ -30,4 +30,9 @@ public class Resposta {
 	private Usuario autor;
 	private Boolean solucao = false;
 
+	public Resposta(DadosCadastroResposta dados, Topico topico) {
+		this.mensagem = dados.mensagem();
+		this.autor = new Usuario(dados.idAutor());
+		this.topico = topico;
+	}
 }

@@ -1,5 +1,6 @@
 package com.br.alura.forum.controller;
 
+import com.br.alura.forum.domain.resposta.DadosCadastroResposta;
 import com.br.alura.forum.domain.resposta.Resposta;
 import com.br.alura.forum.domain.resposta.RespostaRepository;
 import com.br.alura.forum.domain.topico.*;
@@ -20,35 +21,50 @@ import java.util.List;
 public class TopicoController {
 
     @Autowired
-    private TopicoRepository repository;
+    private TopicoRepository topicoRepository;
 
     @Autowired
     private RespostaRepository respostaRepository;
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder){
+    public ResponseEntity cadastrarTopico(@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder){
         var topico = new Topico(dados);
-        repository.save(topico);
+        topicoRepository.save(topico);
         var uri= uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
         return ResponseEntity.created(uri).body(DadosDetalhamentoTopico.fromTopicoETodasRespostas(topico, topico.getRespostas()));
     }
+    @PostMapping("/{id}")
+    @Transactional
+    public ResponseEntity cadastrarResposta(@PathVariable Long id, @RequestBody @Valid DadosCadastroResposta dados){
+        var topico = topicoRepository.getReferenceById(id);
+        var resposta = new Resposta(dados, topico);
+        respostaRepository.save(resposta);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     @Transactional
-    public ResponseEntity <Page<DadosListagemTopico>> listarTopicos(@PageableDefault(size = 10, sort ={"titulo"}) Pageable paginacao){
-        var topicos = repository.findAll(paginacao).map(DadosListagemTopico::new);
+    public ResponseEntity <Page<DadosListagemTopico>> listarTopicos(@PageableDefault(size = 10, sort ={"dataCriacao"}) Pageable paginacao){
+        var topicos = topicoRepository.findAll(paginacao).map(DadosListagemTopico::new);
         return ResponseEntity.ok(topicos);
     }
 
     @GetMapping("/{id}")
     @Transactional
     public ResponseEntity<DadosDetalhamentoTopico> detalharTopico(@PathVariable Long id){
-        var topico = repository.getReferenceById(id);
+        var topico = topicoRepository.getReferenceById(id);
         List<Resposta> respostas = respostaRepository.findByTopicoId(id);
         topico.setRespostas(respostas);
-        System.out.println(topico);
-        return ResponseEntity.ok(DadosDetalhamentoTopico.fromTopicoETodasRespostas(topico, respostas));
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
     }
 
+    @PutMapping
+    @Transactional
+    public ResponseEntity atualizarTopico(@RequestBody @Valid DadosAtualizacaoTopico dados){
+        var topico = topicoRepository.getReferenceById(dados.id());
+        topico.atualizarInformacoesTopico(dados);
+        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
+    }
 
 }

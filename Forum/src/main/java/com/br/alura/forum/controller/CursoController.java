@@ -47,5 +47,12 @@ public class CursoController {
         curso.atualizarInformacoesCurso(dados);
         return ResponseEntity.ok(new DadosDetalhamentoCurso(curso));
     }
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity removerCurso(@PathVariable Long id){
+        var curso = cursoRepository.getReferenceById(id);
+        cursoRepository.delete(curso);
+        return ResponseEntity.ok().build();
+    }
 
 }
