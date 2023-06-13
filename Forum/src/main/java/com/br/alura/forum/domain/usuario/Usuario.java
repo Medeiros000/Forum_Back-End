@@ -35,6 +35,10 @@ public class Usuario implements UserDetails {
 		this.senha = dados.senha();
 	}
 
+	public Usuario(Long aLong) {
+		this.id = aLong;
+	}
+
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

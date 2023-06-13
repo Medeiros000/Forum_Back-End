@@ -20,8 +20,24 @@ public class Curso {
 	private String nome;
 	private String categoria;
 
-	public Curso(String nome, String categoria) {
-		this.nome = nome;
-		this.categoria = categoria;
+
+
+	public Curso(DadosCadastroCurso dados) {
+		this.nome = dados.nome();
+		this.categoria = dados.categoria();
+	}
+
+	public Curso(Long aLong) {
+		this.id = aLong;
+	}
+
+	public void atualizarInformacoesCurso(DadosAtualizacaoCurso dados) {
+		if (dados.nome() != null){
+			this.nome = dados.nome();
+		}
+		if (dados.categoria() != null){
+			this.categoria = dados.categoria();
+		}
+
 	}
 }
