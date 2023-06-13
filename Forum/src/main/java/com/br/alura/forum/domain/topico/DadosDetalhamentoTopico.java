@@ -1,7 +1,12 @@
 package com.br.alura.forum.domain.topico;
 
-public record DadosDetalhamentoTopico(Long id, String titulo, String mensagem, String nomeAutor, String nomeCurso) {
+import com.br.alura.forum.domain.resposta.Resposta;
+
+import java.time.LocalDateTime;
+
+public record DadosDetalhamentoTopico(Long id, String titulo, String mensagem, LocalDateTime data , String nomeAutor, String nomeCurso, Resposta resposta){
     public DadosDetalhamentoTopico(Topico topico) {
-        this(topico.getId(), topico.getTitulo(), topico.getMensagem(), topico.getAutor().getNome(), topico.getCurso().getNome());
+        this(topico.getId(), topico.getTitulo(), topico.getMensagem(), topico.getDataCriacao() ,topico.getAutor().getNome(), topico.getCurso().getNome(), (Resposta) topico.getRespostas());
     }
+
 }

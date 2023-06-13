@@ -1,6 +1,6 @@
 package com.br.alura.forum.domain.topico;
 
-import com.br.alura.forum.domain.Resposta;
+import com.br.alura.forum.domain.resposta.Resposta;
 import com.br.alura.forum.domain.curso.Curso;
 import com.br.alura.forum.domain.usuario.Usuario;
 import jakarta.persistence.*;
@@ -38,6 +38,10 @@ public class Topico {
 	@OneToMany(mappedBy = "topico")
 	private List<Resposta> respostas;
 
+	public void setRespostas(List<Resposta> respostas) {
+		this.respostas = respostas;
+	}
+
 	public Topico(String titulo, String mensagem, Curso curso) {
 		this.titulo = titulo;
 		this.mensagem = mensagem;
@@ -50,5 +54,23 @@ public class Topico {
 		dataCriacao = LocalDateTime.now();
 		this.curso = new Curso(dados.idCurso());
 		this.autor = new Usuario(dados.idAutor());
+	}
+
+	public void adicionarResposta(Resposta resposta) {
+		respostas.add(resposta);
+	}
+
+	@Override
+	public String toString() {
+		return "Topico{" +
+				"id=" + id +
+				", titulo='" + titulo + '\'' +
+				", mensagem='" + mensagem + '\'' +
+				", dataCriacao=" + dataCriacao +
+				", status=" + status +
+				", autor=" + autor +
+				", curso=" + curso +
+				", respostas=" + respostas +
+				'}';
 	}
 }

@@ -32,7 +32,7 @@ public class Usuario implements UserDetails {
 	public Usuario(DadosCadastroUsuario dados) {
 		this.nome = dados.nome();
 		this.email = dados.email();
-		this.senha = dados.senha();
+		setSenha(dados.senha());
 	}
 
 	public Usuario(Long aLong) {
@@ -76,7 +76,8 @@ public class Usuario implements UserDetails {
 	}
 
 
-	public void getSenha(String senha) {
+
+	public void setSenha(String senha) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		this.senha = encoder.encode(senha);
 	}
@@ -89,7 +90,7 @@ public class Usuario implements UserDetails {
 			this.email = dados.email();
 		}
 		if(dados.senha() != null) {
-			this.senha = dados.senha();
+			setSenha(dados.senha());
 		}
 	}
 

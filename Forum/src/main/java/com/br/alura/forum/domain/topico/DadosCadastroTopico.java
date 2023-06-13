@@ -1,15 +1,17 @@
 package com.br.alura.forum.domain.topico;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 public record DadosCadastroTopico(
         @NotBlank
         String titulo,
         @NotBlank
         String mensagem,
-        @NotBlank
+        @Positive
         Long idCurso,
-        @NotBlank
+        @Positive
         Long idAutor
 ) {
+
 }
