@@ -20,18 +20,18 @@ public record DadosDetalhamentoTopico(Long topico_id, String topico_titulo, Stri
         );
     }
 
-    public static DadosDetalhamentoTopico fromTopicoETodasRespostas(Topico topico, List<Resposta> respostas) {
-        List<DadosDetalhamentoResposta> detalhamentoRespostas = DadosDetalhamentoResposta.fromRespostas(respostas);
-
-        return new DadosDetalhamentoTopico(
-                topico.getId(),
-                topico.getTitulo(),
-                topico.getMensagem(),
-                topico.getStatus(),
-                topico.getDataCriacao(),
-                topico.getAutor().getNome(),
-                topico.getCurso().getNome(),
-                detalhamentoRespostas
-        );
-    }
+//    public static DadosDetalhamentoTopico fromTopicoETodasRespostas(Topico topico, List<Resposta> respostas) {
+//        List<DadosDetalhamentoResposta> detalhamentoRespostas = DadosDetalhamentoResposta.fromRespostas(respostas);
+//
+//        return new DadosDetalhamentoTopico(
+//                topico.getId(),
+//                topico.getTitulo(),
+//                topico.getMensagem(),
+//                topico.getStatus(),
+//                topico.getDataCriacao(),
+//                topico.getAutor().getNome(),
+//                topico.getCurso().getNome(),
+//                detalhamentoRespostas
+//        );
+//    }
 }

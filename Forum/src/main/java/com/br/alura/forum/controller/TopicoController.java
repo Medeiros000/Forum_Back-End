@@ -85,8 +85,6 @@ public class TopicoController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<?> removerTopico(@PathVariable Long id){
-        var respostas = respostaRepository.findByTopicoId(id);
-        respostaRepository.deleteAll(respostas);
         topicoRepository.deleteById(id);
         return ResponseEntity.ok().body("Topico " + id + " removido com sucesso!!!");
     }
