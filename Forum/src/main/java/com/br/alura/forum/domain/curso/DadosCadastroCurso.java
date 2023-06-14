@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 
 public record DadosCadastroCurso(
         @NotBlank
-        String nome,
+        String curso_nome,
         @NotBlank
-        String categoria
+        String curso_categoria
 ) {
 }

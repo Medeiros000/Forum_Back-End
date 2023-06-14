@@ -21,8 +21,8 @@ public class Curso {
 	private String categoria;
 
 	public Curso(DadosCadastroCurso dados) {
-		this.nome = dados.nome();
-		this.categoria = dados.categoria();
+		this.nome = dados.curso_nome();
+		this.categoria = dados.curso_categoria();
 	}
 
 	public Curso(Long aLong) {
@@ -30,11 +30,11 @@ public class Curso {
 	}
 
 	public void atualizarInformacoesCurso(DadosAtualizacaoCurso dados) {
-		if (dados.nome() != null){
-			this.nome = dados.nome();
+		if (dados.curso_nome() != null){
+			this.nome = dados.curso_nome();
 		}
-		if (dados.categoria() != null){
-			this.categoria = dados.categoria();
+		if (dados.curso_categoria() != null){
+			this.categoria = dados.curso_categoria();
 		}
 
 	}

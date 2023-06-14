@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.br.alura.forum.domain.usuario.Usuario;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,6 +27,7 @@ public class TokenService {
                     .withSubject(usuario.getNome())
                     .sign(algoritimo);
         } catch (JWTCreationException exception){
+            ResponseEntity.badRequest().body("Erro ao gerar token jwt");
             throw new RuntimeException("Erro ao gerar token jwt", exception);
         }
     }
@@ -42,6 +44,7 @@ public class TokenService {
                     .getSubject();
 
         } catch (JWTVerificationException exception){
+            ResponseEntity.badRequest().body("Token JWT inválido ou expirado");
             throw new RuntimeException("Token JWT inválido ou expirado");
         }
     }

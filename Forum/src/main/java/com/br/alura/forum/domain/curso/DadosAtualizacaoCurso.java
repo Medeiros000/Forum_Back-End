@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record DadosAtualizacaoCurso(
         @NotNull
-        Long id,
-        String nome,
-        String categoria
+        Long curso_id,
+        String curso_nome,
+        String curso_categoria
 ) {
 }

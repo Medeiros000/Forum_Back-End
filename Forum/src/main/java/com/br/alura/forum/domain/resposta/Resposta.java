@@ -31,16 +31,15 @@ public class Resposta {
 	private Boolean solucao = false;
 
 	public Resposta(DadosCadastroResposta dados, Topico topico) {
-		this.mensagem = dados.mensagem();
-		this.autor = new Usuario(dados.idAutor());
+		this.mensagem = dados.resposta_mensagem();
+		this.autor = new Usuario(dados.resposta_autor_id());
 		this.topico = topico;
 	}
 
 	public void atualizarInformacoesResposta(DadosAtualizacaoResposta dados, Topico topico) {
 		this.id = dados.resposta_id();
-		this.mensagem = dados.mensagem();
-		this.autor = new Usuario(dados.autor_id());
+		this.mensagem = dados.resposta_mensagem();
 		this.topico = topico;
-		this.solucao = dados.solucao();
+		this.solucao = dados.resposta_solucao();
 	}
 }

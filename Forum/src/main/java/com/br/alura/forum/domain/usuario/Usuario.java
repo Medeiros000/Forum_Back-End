@@ -30,9 +30,9 @@ public class Usuario implements UserDetails {
 	private boolean ativo = true;
 
 	public Usuario(DadosCadastroUsuario dados) {
-		this.nome = dados.nome();
-		this.email = dados.email();
-		setSenha(dados.senha());
+		this.nome = dados.usuario_nome();
+		this.email = dados.usuario_email();
+		setSenha(dados.usuario_senha());
 	}
 
 	public Usuario(Long aLong) {
@@ -83,14 +83,14 @@ public class Usuario implements UserDetails {
 	}
 
 	public void atualizarInformacoesUsuario(DadosAtualizacaoUsuario dados) {
-		if(dados.nome() != null) {
-			this.nome = dados.nome();
+		if(dados.usuario_nome() != null) {
+			this.nome = dados.usuario_nome();
 		}
-		if(dados.email() != null) {
-			this.email = dados.email();
+		if(dados.usuario_email() != null) {
+			this.email = dados.usuario_email();
 		}
-		if(dados.senha() != null) {
-			setSenha(dados.senha());
+		if(dados.usuario_senha() != null) {
+			setSenha(dados.usuario_senha());
 		}
 	}
 

@@ -5,13 +5,13 @@ import jakarta.validation.constraints.Positive;
 
 public record DadosCadastroTopico(
         @NotBlank
-        String titulo,
+        String topico_titulo,
         @NotBlank
-        String mensagem,
+        String topico_mensagem,
         @Positive
-        Long idCurso,
+        Long curso_id,
         @Positive
-        Long idAutor
+        Long autor_id
 ) {
 
 }

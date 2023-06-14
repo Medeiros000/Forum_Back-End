@@ -3,7 +3,7 @@ package com.br.alura.forum.domain.resposta;
 import java.util.ArrayList;
 import java.util.List;
 
-public record DadosDetalhamentoResposta(Long resposta_id, String resposta_mensagem, String topico_titulo, String autor_nome, Long autor_id, Boolean resposta_solucao) {
+public record DadosListagemRespostaPorUsuario(String topico_titulo, String resposta_mensagem, String autor_nome, Boolean resposta_solucao, Long resposta_id, Long autor_id) {
     public static List<DadosDetalhamentoResposta> fromRespostas(List<Resposta> respostas) {
         List<DadosDetalhamentoResposta> detalhamentoRespostas = new ArrayList<>();
 
@@ -23,5 +23,3 @@ public record DadosDetalhamentoResposta(Long resposta_id, String resposta_mensag
         return detalhamentoRespostas;
     }
 }
-
-

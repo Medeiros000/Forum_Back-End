@@ -12,20 +12,20 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @RestControllerAdvice
 public class TratadorDeErros {
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity tratarErro404() {
+    public ResponseEntity<?> tratarErro404() {
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity tratarErro400(MethodArgumentNotValidException ex) {
+    public ResponseEntity<?> tratarErro400(MethodArgumentNotValidException ex) {
         var erros = ex.getFieldErrors();
 
         return ResponseEntity.badRequest().body(erros.stream().map(DadosErroValidacao::new).toList());
     }
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity tratarErro403() {
-        return ResponseEntity.badRequest().body("Já existe um Tópico cadastrado com esse nome!!!");
+    public ResponseEntity<?> tratarErro403() {
+        return ResponseEntity.badRequest().build();
     }
 
     private record DadosErroValidacao(String campo, String mensagem) {

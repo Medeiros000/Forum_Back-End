@@ -5,15 +5,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record DadosAtualizacaoTopico(
-        @NotNull
-        Long id,
+
         @NotBlank
-        String titulo,
+        String topico_titulo,
         @NotBlank
-        String mensagem,
+        String topico_mensagem,
         @NotNull
-        Long idCurso,
+        StatusTopico topico_status,
+        @NotNull
+        Long curso_id,
         @Positive
-        Long idAutor
+        Long autor_id
 ) {
 }

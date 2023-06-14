@@ -9,13 +9,9 @@ public record DadosAtualizacaoResposta(
         @NotNull
         Long resposta_id,
         @NotBlank
-        String mensagem,
-        @Positive
-        Long autor_id,
-        @Positive
-        Long topico_id,
+        String resposta_mensagem,
         @NotNull
-        Boolean solucao
+        Boolean resposta_solucao
 
 ) {
 }

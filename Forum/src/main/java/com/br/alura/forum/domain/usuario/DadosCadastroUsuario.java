@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 
 public record DadosCadastroUsuario(
     @NotBlank
-    String nome,
+    String usuario_nome,
     @NotBlank
     @Email
-    String email,
+    String usuario_email,
     @NotBlank
-    String senha){
+    String usuario_senha){
 }

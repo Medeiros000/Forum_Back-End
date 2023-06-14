@@ -21,7 +21,7 @@ public class CursoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrarCurso(@RequestBody @Valid DadosCadastroCurso dados, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<?> cadastrarCurso(@RequestBody @Valid DadosCadastroCurso dados, UriComponentsBuilder uriBuilder){
         var curso = new Curso(dados);
         cursoRepository.save(curso);
         var uri= uriBuilder.path("/cursos/{id}").buildAndExpand(curso.getId()).toUri();
@@ -42,17 +42,17 @@ public class CursoController {
     }
     @PutMapping
     @Transactional
-    public ResponseEntity atualizarCurso(@RequestBody @Valid DadosAtualizacaoCurso dados){
-        var curso = cursoRepository.getReferenceById(dados.id());
+    public ResponseEntity<?> atualizarCurso(@RequestBody @Valid DadosAtualizacaoCurso dados){
+        var curso = cursoRepository.getReferenceById(dados.curso_id());
         curso.atualizarInformacoesCurso(dados);
         return ResponseEntity.ok(new DadosDetalhamentoCurso(curso));
     }
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity removerCurso(@PathVariable Long id){
+    public ResponseEntity<?> removerCurso(@PathVariable Long id){
         var curso = cursoRepository.getReferenceById(id);
         cursoRepository.delete(curso);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Curso removido com sucesso!!!");
     }
 
 }

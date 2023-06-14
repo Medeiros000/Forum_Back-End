@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record DadosCadastroResposta(
         @NotBlank
-        String mensagem,
+        String resposta_mensagem,
         @NotNull
-        Long idAutor
+        Long resposta_autor_id
 ) {
 }
