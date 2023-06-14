@@ -21,7 +21,7 @@
 
 ### Tecnologias utilizadas:
 
-- [Eclipse](https://www.eclipse.org/)
+- [Intellij](https://www.jetbrains.com/pt-br/idea/)
 - [MySql](https://www.mysql.com/)
 - [Java](https://www.java.com/pt-BR/)
 - [Spring Security](https://start.spring.io/)
