@@ -35,4 +35,12 @@ public class Resposta {
 		this.autor = new Usuario(dados.idAutor());
 		this.topico = topico;
 	}
+
+	public void atualizarInformacoesResposta(DadosAtualizacaoResposta dados, Topico topico) {
+		this.id = dados.resposta_id();
+		this.mensagem = dados.mensagem();
+		this.autor = new Usuario(dados.autor_id());
+		this.topico = topico;
+		this.solucao = dados.solucao();
+	}
 }

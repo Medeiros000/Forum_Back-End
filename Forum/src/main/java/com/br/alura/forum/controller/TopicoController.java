@@ -1,5 +1,6 @@
 package com.br.alura.forum.controller;
 
+import com.br.alura.forum.domain.resposta.DadosAtualizacaoResposta;
 import com.br.alura.forum.domain.resposta.DadosCadastroResposta;
 import com.br.alura.forum.domain.resposta.Resposta;
 import com.br.alura.forum.domain.resposta.RespostaRepository;
@@ -28,24 +29,17 @@ public class TopicoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrarTopico(@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<?> cadastrarTopico(@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder){
         var topico = new Topico(dados);
         topicoRepository.save(topico);
         var uri= uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
         return ResponseEntity.created(uri).body(DadosDetalhamentoTopico.fromTopicoETodasRespostas(topico, topico.getRespostas()));
     }
-    @PostMapping("/{id}")
-    @Transactional
-    public ResponseEntity cadastrarResposta(@PathVariable Long id, @RequestBody @Valid DadosCadastroResposta dados){
-        var topico = topicoRepository.getReferenceById(id);
-        var resposta = new Resposta(dados, topico);
-        respostaRepository.save(resposta);
-        return ResponseEntity.noContent().build();
-    }
+
 
     @GetMapping
     @Transactional
-    public ResponseEntity <Page<DadosListagemTopico>> listarTopicos(@PageableDefault(size = 10, sort ={"dataCriacao"}) Pageable paginacao){
+    public ResponseEntity <Page<DadosListagemTopico>> listarTopicos(@PageableDefault(sort ={"dataCriacao"}) Pageable paginacao){
         var topicos = topicoRepository.findAll(paginacao).map(DadosListagemTopico::new);
         return ResponseEntity.ok(topicos);
     }
@@ -61,7 +55,7 @@ public class TopicoController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizarTopico(@RequestBody @Valid DadosAtualizacaoTopico dados){
+    public ResponseEntity<?> atualizarTopico(@RequestBody @Valid DadosAtualizacaoTopico dados){
         var topico = topicoRepository.getReferenceById(dados.id());
         topico.atualizarInformacoesTopico(dados);
         return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));

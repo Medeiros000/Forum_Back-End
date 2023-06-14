@@ -6,7 +6,7 @@ import com.br.alura.forum.domain.resposta.Resposta;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record DadosDetalhamentoTopico(Long id, String titulo, String mensagem, LocalDateTime data, String nomeAutor, String nomeCurso, List<DadosDetalhamentoResposta> respostas) {
+public record DadosDetalhamentoTopico(Long id, String titulo, String mensagem, LocalDateTime data, String nomeAutor, String curso, List<DadosDetalhamentoResposta> respostas) {
     public DadosDetalhamentoTopico(Topico topico) {
         this(
                 topico.getId(),
