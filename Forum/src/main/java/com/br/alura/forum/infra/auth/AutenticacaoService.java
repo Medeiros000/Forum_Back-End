@@ -1,5 +1,6 @@
-package com.br.alura.forum.domain.usuario;
+package com.br.alura.forum.infra.auth;
 
+import com.br.alura.forum.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,4 +1,4 @@
-package com.br.alura.forum.domain.usuario;
+package com.br.alura.forum.infra.auth;
 
 public record DadosAutenticacao(
         String nome,

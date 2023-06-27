@@ -1,10 +1,7 @@
-package com.br.alura.forum.domain.usuario;
+package com.br.alura.forum.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +13,7 @@ import java.util.List;
 @Table(name = "usuarios")
 @Entity(name = "Usuario")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -29,16 +27,10 @@ public class Usuario implements UserDetails {
 	private String senha;
 	private boolean ativo = true;
 
-	public Usuario(DadosCadastroUsuario dados) {
-		this.nome = dados.usuario_nome();
-		this.email = dados.usuario_email();
-		setSenha(dados.usuario_senha());
+	public void setSenha(String senha) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		this.senha = encoder.encode(senha);
 	}
-
-	public Usuario(Long aLong) {
-		this.id = aLong;
-	}
-
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -75,30 +67,4 @@ public class Usuario implements UserDetails {
 		return true;
 	}
 
-
-
-	public void setSenha(String senha) {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		this.senha = encoder.encode(senha);
-	}
-
-	public void atualizarInformacoesUsuario(DadosAtualizacaoUsuario dados) {
-		if(dados.usuario_nome() != null) {
-			this.nome = dados.usuario_nome();
-		}
-		if(dados.usuario_email() != null) {
-			this.email = dados.usuario_email();
-		}
-		if(dados.usuario_senha() != null) {
-			setSenha(dados.usuario_senha());
-		}
-	}
-
-	public void excluir() {
-		if (this.ativo) {
-			this.ativo = false;
-		} else {
-			this.ativo = true;
-		}
-	}
 }

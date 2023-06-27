@@ -1,13 +1,16 @@
 package com.br.alura.forum.controller;
 
-import com.br.alura.forum.domain.resposta.DadosCadastroResposta;
-import com.br.alura.forum.domain.resposta.Resposta;
-import com.br.alura.forum.domain.resposta.RespostaRepository;
-import com.br.alura.forum.domain.topico.*;
-import com.br.alura.forum.domain.usuario.UsuarioRepository;
-import jakarta.transaction.Transactional;
+import com.br.alura.forum.dto.*;
+import com.br.alura.forum.model.*;
+import com.br.alura.forum.service.CursoService;
+import com.br.alura.forum.service.RespostaService;
+import com.br.alura.forum.service.TopicoService;
+import com.br.alura.forum.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -15,77 +18,138 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
 public class TopicoController {
 
-    private final TopicoRepository topicoRepository;
-    private final RespostaRepository respostaRepository;
-    private final UsuarioRepository usuarioRepository;
-    public TopicoController(TopicoRepository topicoRepository, RespostaRepository respostaRepository, UsuarioRepository usuarioRepository) {
-        this.topicoRepository = topicoRepository;
-        this.respostaRepository = respostaRepository;
-        this.usuarioRepository = usuarioRepository;
-    }
+    @Autowired
+    private TopicoService topicoService;
+    @Autowired
+    private RespostaService respostaService;
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private CursoService cursoService;
 
     @PostMapping
-    @Transactional
-    public ResponseEntity<?> cadastrarTopico(@RequestBody @Valid DadosCadastroTopico dados, UriComponentsBuilder uriBuilder){
-        var topico = new Topico(dados);
-        topicoRepository.save(topico);
-        var uri= uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
-        return ResponseEntity.created(uri).body(new DadosDetalhamentoTopico(topico));
-    }
-    @PostMapping("/{id}")
-    @Transactional
-    public ResponseEntity<?> cadastrarResposta(@PathVariable Long id, @RequestBody @Valid DadosCadastroResposta dados){
-        var topico = topicoRepository.getReferenceById(id);
-        if (topico.getStatus().equals(StatusTopico.FECHADO)){
-            return ResponseEntity.badRequest().body("Não é possível responder um tópico Fechado!!!");
+    public ResponseEntity<Object> criarTopico(@RequestBody @Valid TopicoRecordDto topicoRecordDto, UriComponentsBuilder uriBuilder) {
+        Optional<Usuario> usuarioOptional = usuarioService.buscarUsuarioPorId(topicoRecordDto.autorId());
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Autor não encontrado!");
         }
-        topico.setStatus(StatusTopico.NAO_SOLUCIONADO);
-        topicoRepository.save(topico);
-        var resposta = new Resposta(dados, topico);
-        respostaRepository.save(resposta);
-        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
+        Usuario autor = usuarioOptional.get();
+        Optional<Curso> cursoOptional = cursoService.buscarCursoPorId(topicoRecordDto.cursoId());
+        if (cursoOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Curso não encontrado!");
+        }
+        Curso curso = cursoOptional.get();
+        Topico topico = new Topico();
+        BeanUtils.copyProperties(topicoRecordDto, topico);
+        topico.setAutor(autor);
+        topico.setCurso(curso);
+        topicoService.salvarTopico(topico);
+        TopicoResponse topicoResponse = new TopicoResponse(topico, true);
+        var uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
+        return ResponseEntity.created(uri).body(topicoResponse);
     }
 
-    @GetMapping
-    @Transactional
-    public ResponseEntity <Page<DadosListagemTopico>> listarTopicos(@PageableDefault(sort ={"dataCriacao"}) Pageable paginacao){
-        var topicos = topicoRepository.findAll(paginacao).map(DadosListagemTopico::new);
-        return ResponseEntity.ok(topicos);
+    @PostMapping("/{id}")
+    public ResponseEntity<Object> responderTopico(@PathVariable Long id, @RequestBody @Valid RespostaRecordDto respostaRecordDto){
+        Optional<Topico> topicoOptional = Optional.ofNullable(topicoService.buscarTopicoPorId(id));
+        if (topicoOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Tópico não encontrado!");
+        }
+        Topico topico = topicoOptional.get();
+        Optional<Usuario> usuarioOptional = usuarioService.buscarUsuarioPorId(respostaRecordDto.autor_id());
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Autor não encontrado!");
+        }
+        Usuario usuario = usuarioOptional.get();
+        if (!usuario.isAtivo()){
+            return ResponseEntity.badRequest().body("Usuário não está ativo!");
+        }
+        if (topico.getStatus().equals(StatusTopico.FECHADO)){
+            return ResponseEntity.badRequest().body("Não é possível responder um tópico Fechado!");
+        } else if (topico.getStatus().equals(StatusTopico.NAO_RESPONDIDO)){
+            topicoService.mudarStatusTopico(topico);
+        }
+        Resposta resposta = new Resposta();
+        resposta.setMensagem(respostaRecordDto.mensagem());
+        resposta.setAutor(usuario);
+        resposta.setTopico(topico);
+        respostaService.salvarResposta(resposta);
+        return ResponseEntity.ok().body(new TopicoResponse (topico, true));
     }
 
     @GetMapping("/{id}")
-    @Transactional
-    public ResponseEntity<DadosDetalhamentoTopico> detalharTopico(@PathVariable Long id){
-        var topico = topicoRepository.getReferenceById(id);
-        List<Resposta> respostas = respostaRepository.findByTopicoId(id);
-        topico.setRespostas(respostas);
-        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
-    }
-    @GetMapping("/usuario/{id}")
-    @Transactional
-    public ResponseEntity<?> listarTopicosPorUsuario(@PathVariable Long id){
-        var usuario = usuarioRepository.getReferenceById(id);
-        var topico = topicoRepository.findAllByAutorId(usuario.getId());
-        return ResponseEntity.ok().body(DadosListagemTopicoPorUsuario.fromTopicos(topico)) ;
+    public ResponseEntity<TopicoResponse> buscarTopicoPorId(@PathVariable Long id) {
+        Optional<Topico> topicoOptional = Optional.ofNullable(topicoService.buscarTopicoPorId(id));
+        if (topicoOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        Topico topico = topicoOptional.get();
+        TopicoResponse topicoResponse = new TopicoResponse(topico, true);
+        return ResponseEntity.ok(topicoResponse);
     }
 
+    @GetMapping
+    public ResponseEntity<Page<TopicoResponse>> listarTopicos(@PageableDefault(page = 0, size = 10, sort = "dataCriacao") Pageable paginacao) {
+        Page<Topico> topicos = topicoService.listarTopicos(paginacao);
+        List<TopicoResponse> topicosResponse = TopicoResponse.converter(topicos.getContent());
+        Page<TopicoResponse> page = new PageImpl<>(topicosResponse, paginacao, topicos.getTotalElements());
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/{id}/topicos")
+    public ResponseEntity<List<TopicoResponse>> listarTopicosPorUsuario(@PathVariable @Valid Long id) {
+        List<Topico> topicos = topicoService.listarTopicosPorUsuario(id);
+        List<TopicoResponse> topicosResponse = TopicoResponse.converter(topicos);
+        return ResponseEntity.ok(topicosResponse);
+    }
+
+
     @PutMapping("/{id}")
-    @Transactional
-    public ResponseEntity<?> editarTopico(@PathVariable Long id,@RequestBody @Valid DadosAtualizacaoTopico dados){
-        var topico = topicoRepository.getReferenceById(id);
-        topico.atualizarInformacoesTopico(dados);
-        return ResponseEntity.ok(new DadosDetalhamentoTopico(topico));
+    public ResponseEntity<Object> atualizarTopico(@PathVariable Long id, @RequestBody @Valid TopicoRecordDto topicoRecordDto) {
+        Optional<Topico> topicoOptional = Optional.ofNullable(topicoService.buscarTopicoPorId(id));
+        if (topicoOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Tópico não encontrado!");
+        }
+        Topico topico = topicoOptional.get();
+        if (topico.getStatus().equals(StatusTopico.FECHADO)){
+            return ResponseEntity.badRequest().body("Não é possível atualizar um tópico Fechado!");
+        }
+        Optional<Curso> cursoOptional = cursoService.buscarCursoPorId(topicoRecordDto.cursoId());
+        if (cursoOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Curso não encontrado!");
+        }
+        Curso curso = cursoOptional.get();
+        Optional<Usuario> usuarioOptional = usuarioService.buscarUsuarioPorId(topicoRecordDto.autorId());
+        if (usuarioOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Autor não encontrado!");
+        }
+        Usuario autor = usuarioOptional.get();
+        topico.setTitulo(topicoRecordDto.titulo());
+        topico.setMensagem(topicoRecordDto.mensagem());
+        topico.setCurso(curso);
+        topico.setAutor(autor);
+        topicoService.salvarTopico(topico);
+        TopicoResponse topicoResponse = new TopicoResponse(topico, true);
+        return ResponseEntity.ok(topicoResponse);
+    }
+
+    @PutMapping("/{id}/fechar")
+    public ResponseEntity<TopicoResponse> fecharTopico(@PathVariable Long id) {
+        Topico topico = topicoService.fecharTopico(id);
+        TopicoResponse topicoResponse = new TopicoResponse(topico, true);
+        return ResponseEntity.ok(topicoResponse);
     }
 
     @DeleteMapping("/{id}")
-    @Transactional
-    public ResponseEntity<?> removerTopico(@PathVariable Long id){
-        topicoRepository.deleteById(id);
-        return ResponseEntity.ok().body("Topico " + id + " removido com sucesso!!!");
+    public ResponseEntity<Void> excluirTopico(@PathVariable Long id) {
+        topicoService.excluirTopico(id);
+        return ResponseEntity.noContent().build();
     }
+
 }

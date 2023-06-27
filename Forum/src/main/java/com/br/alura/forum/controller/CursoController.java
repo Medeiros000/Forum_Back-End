@@ -1,9 +1,10 @@
 package com.br.alura.forum.controller;
 
-import com.br.alura.forum.domain.curso.*;
-import com.br.alura.forum.domain.usuario.DadosListagemUsuario;
-import jakarta.transaction.Transactional;
+import com.br.alura.forum.dto.CursoRecordDto;
+import com.br.alura.forum.model.Curso;
+import com.br.alura.forum.service.CursoService;
 import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,47 +13,66 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/cursos")
 public class CursoController {
 
     @Autowired
-    private CursoRepository cursoRepository;
+    private CursoService cursoService;
 
     @PostMapping
-    @Transactional
-    public ResponseEntity<?> cadastrarCurso(@RequestBody @Valid DadosCadastroCurso dados, UriComponentsBuilder uriBuilder){
-        var curso = new Curso(dados);
-        cursoRepository.save(curso);
-        var uri= uriBuilder.path("/cursos/{id}").buildAndExpand(curso.getId()).toUri();
-        return ResponseEntity.created(uri).body(new DadosDetalhamentoCurso(curso));
+    public ResponseEntity<Object> salvarCurso(@RequestBody @Valid CursoRecordDto cursoRecordDto, UriComponentsBuilder uriComponentsBuilder) {
+        Curso curso = new Curso();
+        BeanUtils.copyProperties(cursoRecordDto, curso);
+        if (cursoService.buscarCursoPorNome(curso.getNome()).isPresent()) {
+            return ResponseEntity.badRequest().body("Já existe um curso com o nome informado");
+        }
+        cursoService.salvarCurso(curso);
+        var uri = uriComponentsBuilder.path("/cursos/{id}").buildAndExpand(curso.getId()).toUri();
+        return ResponseEntity.created(uri).body(curso);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> buscarCurso(@PathVariable Long id) {
+        Optional<Curso> cursoOptional = cursoService.buscarCursoPorId(id);
+        if (cursoOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Não existe curso com o id informado");
+        }
+        var curso = cursoOptional.get();
+        BeanUtils.copyProperties(cursoOptional, curso);
+        return ResponseEntity.ok(curso);
     }
 
     @GetMapping
-    @Transactional
-    public ResponseEntity <Page<DadosListagemCurso>> listarCursos(@PageableDefault(size = 10, sort ={"nome"}) Pageable paginacao){
-        var cursos = cursoRepository.findAll(paginacao).map(DadosListagemCurso::new);
+    public ResponseEntity<Page<Curso>> listarCursos(@PageableDefault(page = 0, size = 10, sort = "id") Pageable paginacao) {
+        Optional<Page<Curso>> cursosOptional = Optional.ofNullable(cursoService.listarCursos(paginacao));
+        if (cursosOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Page<Curso> cursos = cursosOptional.get();
         return ResponseEntity.ok(cursos);
     }
-    @GetMapping("/{id}")
-    @Transactional
-    public ResponseEntity<DadosDetalhamentoCurso> detalharCurso(@PathVariable Long id){
-        var curso = cursoRepository.getReferenceById(id);
-        return ResponseEntity.ok(new DadosDetalhamentoCurso(curso));
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> atualizarCurso(@PathVariable Long id, @RequestBody @Valid CursoRecordDto cursoRecordDto) {
+        Optional <Curso> cursoOptional = cursoService.buscarCursoPorId(id);
+        if (cursoOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Não existe curso com o id informado");
+        }
+        Curso curso = cursoOptional.get();
+        BeanUtils.copyProperties(cursoRecordDto, curso);
+        return ResponseEntity.ok(cursoService.salvarCurso(curso));
     }
-    @PutMapping
-    @Transactional
-    public ResponseEntity<?> atualizarCurso(@RequestBody @Valid DadosAtualizacaoCurso dados){
-        var curso = cursoRepository.getReferenceById(dados.curso_id());
-        curso.atualizarInformacoesCurso(dados);
-        return ResponseEntity.ok(new DadosDetalhamentoCurso(curso));
-    }
+
     @DeleteMapping("/{id}")
-    @Transactional
-    public ResponseEntity<?> removerCurso(@PathVariable Long id){
-        var curso = cursoRepository.getReferenceById(id);
-        cursoRepository.delete(curso);
-        return ResponseEntity.ok().body("Curso removido com sucesso!!!");
+    public ResponseEntity<String> excluirCurso(@PathVariable Long id) {
+        if (cursoService.buscarCursoPorId(id).isEmpty()) {
+            return ResponseEntity.badRequest().body("Não existe curso com o id informado");
+        }
+        cursoService.excluirCurso(id);
+        return ResponseEntity.ok().body("Curso excluído com sucesso");
     }
 
 }
+

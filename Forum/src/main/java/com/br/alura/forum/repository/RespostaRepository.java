@@ -1,5 +1,6 @@
-package com.br.alura.forum.domain.resposta;
+package com.br.alura.forum.repository;
 
+import com.br.alura.forum.model.Resposta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
