@@ -35,7 +35,7 @@ Exemplo: Angular, React, VueJS, Laravel e outros.
 - [Token JWT](https://jwt.io/)
 
 ---
-## 📋 DER <br />
+## 📋 Diagrama de Entidade-Relecionamento do BD <br />
 * 🚨🚨 ATENÇÃO PROJETO EM ANDAMENTO.![Screenshot 2023-07-07 202946](https://github.com/Medeiros000/Forum_Back-End/assets/98979459/7232b2fe-8775-483a-bdf8-ed237d50396a)
 
 ---
