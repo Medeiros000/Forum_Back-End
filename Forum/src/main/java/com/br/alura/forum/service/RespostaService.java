@@ -3,8 +3,6 @@ package com.br.alura.forum.service;
 import com.br.alura.forum.dto.RespostaResponse;
 import com.br.alura.forum.model.Resposta;
 import com.br.alura.forum.repository.RespostaRepository;
-import com.br.alura.forum.repository.TopicoRepository;
-import com.br.alura.forum.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

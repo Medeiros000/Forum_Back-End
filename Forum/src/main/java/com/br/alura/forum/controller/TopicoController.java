@@ -109,7 +109,6 @@ public class TopicoController {
         return ResponseEntity.ok(topicosResponse);
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<Object> atualizarTopico(@PathVariable Long id, @RequestBody @Valid TopicoRecordDto topicoRecordDto) {
         Optional<Topico> topicoOptional = Optional.ofNullable(topicoService.buscarTopicoPorId(id));

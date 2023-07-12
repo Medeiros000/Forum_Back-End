@@ -56,7 +56,7 @@ public class CursoController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<Object> atualizarCurso(@PathVariable Long id, @RequestBody @Valid CursoRecordDto cursoRecordDto) {
-        Optional <Curso> cursoOptional = cursoService.buscarCursoPorId(id);
+        Optional<Curso> cursoOptional = cursoService.buscarCursoPorId(id);
         if (cursoOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Não existe curso com o id informado");
         }

@@ -12,6 +12,5 @@ public record TopicoRecordDto(
         Long autorId,
         @NotNull
         Long cursoId
-
 ) {
 }
