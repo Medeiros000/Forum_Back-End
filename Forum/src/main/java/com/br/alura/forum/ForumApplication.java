@@ -18,7 +18,7 @@ public class ForumApplication {
 	     return new WebMvcConfigurer() {
 	         @Override
 	         public void addCorsMappings(CorsRegistry registry) {
-	             registry.addMapping("/**").allowedOrigins("https://forum-jr-production.up.railway.app/");
+	             registry.addMapping("/**").allowedOrigins("*");
 	         }
 	     };
 	 }
