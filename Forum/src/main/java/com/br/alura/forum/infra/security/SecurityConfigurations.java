@@ -28,8 +28,8 @@ public class SecurityConfigurations {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(CorsConfiguration.ALL).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").hasAnyRole("*")
+                        .requestMatchers(HttpMethod.POST, "/usuarios").hasAnyRole("*")
                         .anyRequest().authenticated()
                 );
         http.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
