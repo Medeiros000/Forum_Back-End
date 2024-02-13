@@ -17,7 +17,7 @@ Exemplo: Angular, React, VueJS, Laravel e outros.
 ---
 ## ⚙️ Por onde começar?
 * 1° Instalação: <br />
-* 2° Escolha uma IDE de sua preferência Exemplo: STS, Eclipse, Inteligin ou qualquer outra.<br />
+* 2° Escolha uma IDE de sua preferência Exemplo: STS, Eclipse, Intellij ou qualquer outra.<br />
 * 3° Git<br />
 * 4° Escolha um banco de dados de sua preferencia para simular os testes localmente em sua maquina.<br />
 * 5°  Você pode dar um fork no projeto, clonar em seu PC <br />
